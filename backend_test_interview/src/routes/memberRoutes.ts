@@ -1,38 +1,30 @@
 import express from 'express';
-import { checkMembers, borrowBook } from '../controllers/memberController';
+import { checkMembers, borrowBook, returnBook } from '../controllers/memberController';
 
 const router = express.Router();
 
 /**
  * @swagger
+ * tags:
+ *   name: Members
+ *   description: Member management
+ */
+
+/**
+ * @swagger
  * /api/members:
  *   get:
- *     summary: Get all members
+ *     summary: Retrieve a list of members
+ *     tags: [Members]
  *     responses:
  *       200:
- *         description: A list of all members
+ *         description: A list of members
  *         content:
  *           application/json:
  *             schema:
  *               type: array
  *               items:
- *                 type: object
- *                 properties:
- *                   _id:
- *                     type: string
- *                   code:
- *                     type: string
- *                   name:
- *                     type: string
- *                   borrowedBooks:
- *                     type: array
- *                     items:
- *                       type: object
- *                       properties:
- *                         _id:
- *                           type: string
- *                         title:
- *                           type: string
+ *                 $ref: '#/components/schemas/Member'
  */
 router.get('/members', checkMembers);
 
@@ -41,6 +33,7 @@ router.get('/members', checkMembers);
  * /api/members/borrow:
  *   post:
  *     summary: Borrow a book
+ *     tags: [Members]
  *     requestBody:
  *       required: true
  *       content:
@@ -55,9 +48,34 @@ router.get('/members', checkMembers);
  *     responses:
  *       200:
  *         description: Book borrowed successfully
- *       400:
- *         description: Bad request
+ *       404:
+ *         description: Member or book not found
  */
 router.post('/members/borrow', borrowBook);
+
+/**
+ * @swagger
+ * /api/members/return:
+ *   post:
+ *     summary: Return a book
+ *     tags: [Members]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               memberId:
+ *                 type: string
+ *               bookId:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Book returned successfully
+ *       404:
+ *         description: Member or book not found
+ */
+router.post('/members/return', returnBook);
 
 export default router;
